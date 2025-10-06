@@ -7,7 +7,7 @@ export type Event = {
   date: string; // YYYY-MM-DD
   start: string; // HH:MM
   durationMin: number;
-  type: "Film" | "Shorts" | "Talk";
+  type: "Film" | "Shorts" | "Talk" | "Ceremony";
   director?: string;
   description?: string;
   notes?: string;
@@ -56,4 +56,6 @@ export const EVENTS: Event[] = [
   {id:"2025-10-11-shorts-3",title:"Shorts: Day 47 / Plane Tree / Vector",country:"Multi",date:"2025-10-11",start:"16:30",durationMin:55,type:"Shorts",withQA:true,notes:"With Alsu Kurmasheva + CPJ’s Gulnoza Said present.",tags:["shorts","Q&A"]},
   {id:"2025-10-11-facilitator-2",title:"The Facilitator / El Facilitador",country:"Uruguay",year:"2024",runtimeMin:68,date:"2025-10-11",start:"17:30",durationMin:85,type:"Film",director:"Lucas Silva",withQA:true,panel:true,notes:"Panel (EN): Holding Power to Account (Silva, Holcová, Nóchez; mod. Valér Kot).",tags:["corruption","panel","Q&A"]},
   {id:"2025-10-11-revolution-3-2",title:"Revolution 3.0",country:"US",year:"2025",runtimeMin:78,date:"2025-10-11",start:"18:00",durationMin:85,type:"Film",director:"Reza Bird",withQA:false,tags:["Iran","exile"]},
+  {id:"2025-10-11-closing-ceremony",title: "Closing Ceremony",date: "2025-10-11",start: "20:00",durationMin: 60,type: "Ceremony",country: "—",description:"The closing ceremony of the second annual Press Play Prague film festival and the announcement of the festival awards.",tags: ["Press Play Prague"]},  
+  
 ];
