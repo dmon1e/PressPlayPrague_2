@@ -15,6 +15,29 @@ export default function Page(){
   const [open, setOpen] = useState<Event|null>(null);
   const [plan, setPlan] = useState<Record<string, boolean>>({});
 
+  function exportPlan() {
+    const ids = Object.keys(plan).filter((id) => plan[id]);
+    const blob = new Blob([JSON.stringify(ids)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "press-play-plan.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importPlan(file: File) {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const ids = JSON.parse(String(r.result)) as string[];
+        setPlan(Object.fromEntries(ids.map((id) => [id, true])));
+      } catch {
+        alert("Invalid file. Please choose a plan JSON exported from this site.");
+      }
+    };
+    r.readAsText(file);
+  }
+
   useEffect(()=>{ try{ const raw = localStorage.getItem("ppp25-plan"); if(raw) setPlan(JSON.parse(raw)); }catch{} },[]);
   useEffect(()=>{ try{ localStorage.setItem("ppp25-plan", JSON.stringify(plan)); }catch{} },[plan]);
 
@@ -115,3 +138,23 @@ function fmtRange(date: string, start: string, durMin: number){
   const f = new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"});
   return `${f.format(s)}–${f.format(e)}`;
 }
+<header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b">
+  <div className="max-w-6xl mx-auto px-4 py-3">
+    <h1 className="text-xl font-semibold">
+      Press Play Prague — Film Fest Schedule (Oct 7–11, 2025)
+    </h1>
+
+    {/* Mobile: My Schedule button */}
+    <div className="mt-2 flex lg:hidden">
+      <button
+        className="px-3 py-2 rounded-lg border text-sm"
+        onClick={() => document.getElementById("my-plan")?.scrollIntoView({ behavior: "smooth" })}
+        aria-label="Jump to My Schedule"
+      >
+        ♥ My Schedule
+      </button>
+    </div>
+
+    <Filters state={filterState} />
+  </div>
+</header>
