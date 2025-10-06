@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-// relative imports (no alias needed)
 import { EVENTS, VENUE, type Event } from "../data/schedule";
 import Filters from "../components/Filters";
 import EventCard from "../components/EventCard";
@@ -10,18 +9,19 @@ import PlanSidebar from "../components/PlanSidebar";
 import { makeICS } from "../lib/ics";
 
 export default function Page() {
-  // --- filter state ---
+  // Filters
   const [q, setQ] = useState("");
   const [day, setDay] = useState<"all" | string>("all");
   const [kind, setKind] = useState<"all" | string>("all");
   const [country, setCountry] = useState<"all" | string>("all");
   const [onlyQA, setOnlyQA] = useState(false);
 
-  // --- UI & plan state ---
+  // UI
   const [open, setOpen] = useState<Event | null>(null);
   const [plan, setPlan] = useState<Record<string, boolean>>({});
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // load/save plan
+  // Persist plan
   useEffect(() => {
     try {
       const raw = localStorage.getItem("ppp25-plan");
@@ -34,7 +34,7 @@ export default function Page() {
     } catch {}
   }, [plan]);
 
-  // derived lists
+  // Options for filters
   const days = useMemo(
     () => Array.from(new Set(EVENTS.map((e) => e.date))).sort(),
     []
@@ -44,7 +44,6 @@ export default function Page() {
     []
   );
 
-  // bag for Filters
   const filterState = {
     q,
     day,
@@ -67,7 +66,7 @@ export default function Page() {
     countries,
   };
 
-  // apply filters
+  // Apply filters
   const filtered = useMemo(() => {
     return EVENTS.filter((e) => {
       if (day !== "all" && e.date !== day) return false;
@@ -92,35 +91,32 @@ export default function Page() {
     }).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
   }, [q, day, kind, country, onlyQA]);
 
-  // group by day
-  const grouped = useMemo(() => {
-    return filtered.reduce((acc, ev) => {
-      (acc[ev.date] = acc[ev.date] || []).push(ev);
-      return acc;
-    }, {} as Record<string, Event[]>);
-  }, [filtered]);
+  // Group by date
+  const grouped = useMemo(
+    () =>
+      filtered.reduce((acc, ev) => {
+        (acc[ev.date] = acc[ev.date] || []).push(ev);
+        return acc;
+      }, {} as Record<string, Event[]>),
+    [filtered]
+  );
 
-  // planned events
   const planEvents = useMemo(() => EVENTS.filter((e) => plan[e.id]), [plan]);
 
-  // mobile jump handler
   const jumpToPlan = () =>
     document.getElementById("my-plan")?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <div className="min-h-screen">
-      {/* HEADER */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-3">
-            {/* <img src="/logo.svg" alt="Press Play Prague" className="h-8 w-auto" /> */}
-            <h1 className="text-xl font-semibold">
-              Press Play Prague — Film Fest Schedule (Oct 7–11, 2025)
-            </h1>
-          </div>
+      {/* Compact sticky header */}
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+          <h1 className="text-base leading-tight font-semibold md:text-xl">
+            Press Play Prague — Film Fest Schedule (Oct 7–11, 2025)
+          </h1>
 
-          {/* Mobile: My Schedule button */}
-          <div className="mt-2 flex lg:hidden">
+          {/* Mobile actions */}
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               className="px-3 py-2 rounded-lg border text-sm"
               onClick={jumpToPlan}
@@ -128,14 +124,35 @@ export default function Page() {
             >
               ♥ My Schedule
             </button>
+            <button
+              className="px-3 py-2 rounded-lg border text-sm"
+              onClick={() => setMobileFiltersOpen((v) => !v)}
+              aria-expanded={mobileFiltersOpen}
+              aria-controls="mobile-filters"
+            >
+              {mobileFiltersOpen ? "Hide Filters" : "Filters"}
+            </button>
           </div>
+        </div>
 
-          {/* Filters */}
-          <Filters state={filterState} />
+        {/* Desktop filters live in the header */}
+        <div className="hidden lg:block py-2">
+          <div className="max-w-6xl mx-auto px-4">
+            <Filters state={filterState} />
+          </div>
         </div>
       </header>
 
-      {/* MAIN */}
+      {/* Mobile collapsible filters (below header so content scrolls) */}
+      {mobileFiltersOpen && (
+        <div id="mobile-filters" className="lg:hidden border-b bg-white">
+          <div className="max-w-6xl mx-auto px-4 py-3">
+            <Filters state={filterState} />
+          </div>
+        </div>
+      )}
+
+      {/* Main */}
       <main className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
         <section className="lg:col-span-2 space-y-6">
           {Object.keys(grouped).length === 0 && (
@@ -172,7 +189,7 @@ export default function Page() {
             ))}
         </section>
 
-        {/* Right sidebar: My Plan, etc. */}
+        {/* Sidebar */}
         <PlanSidebar
           events={planEvents}
           open={(e) => setOpen(e)}
@@ -180,7 +197,7 @@ export default function Page() {
         />
       </main>
 
-      {/* DETAILS DIALOG */}
+      {/* Details dialog */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -243,21 +260,10 @@ export default function Page() {
         </div>
       )}
 
-      {/* FOOTER */}
       <footer className="max-w-6xl mx-auto px-4 py-8 text-xs text-neutral-500">
         Built for quick deployment on Vercel. Edit data in{" "}
         <code>data/schedule.ts</code>.
       </footer>
-
-      {/* Optional: floating "My Schedule" FAB on mobile (uncomment to use)
-      <button
-        onClick={jumpToPlan}
-        className="fixed bottom-4 right-4 lg:hidden px-4 py-3 rounded-full shadow border bg-white"
-        aria-label="Jump to My Schedule"
-      >
-        ♥ My Schedule
-      </button>
-      */}
     </div>
   );
 }
