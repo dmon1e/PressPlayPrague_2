@@ -2,11 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+// data & components (relative imports)
 import { EVENTS, VENUE, type Event } from "../data/schedule";
 import Filters from "../components/Filters";
 import EventCard from "../components/EventCard";
 import PlanSidebar from "../components/PlanSidebar";
 import { makeICS } from "../lib/ics";
+
+// JSON maps (ensure tsconfig.json has "resolveJsonModule": true)
+import THEATRES from "../data/theatres.json";
+import TICKETS from "../data/tickets.json";
 
 export default function Page() {
   // Filters
@@ -34,7 +39,7 @@ export default function Page() {
     } catch {}
   }, [plan]);
 
-  // Options for filters
+  // Filter options
   const days = useMemo(
     () => Array.from(new Set(EVENTS.map((e) => e.date))).sort(),
     []
@@ -115,7 +120,6 @@ export default function Page() {
             Press Play Prague — Film Fest Schedule (Oct 7–11, 2025)
           </h1>
 
-          {/* Mobile actions */}
           <div className="flex items-center gap-2 lg:hidden">
             <button
               className="px-3 py-2 rounded-lg border text-sm"
@@ -135,7 +139,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Desktop filters live in the header */}
+        {/* Desktop filters */}
         <div className="hidden lg:block py-2">
           <div className="max-w-6xl mx-auto px-4">
             <Filters state={filterState} />
@@ -143,7 +147,7 @@ export default function Page() {
         </div>
       </header>
 
-      {/* Mobile collapsible filters (below header so content scrolls) */}
+      {/* Mobile collapsible filters */}
       {mobileFiltersOpen && (
         <div id="mobile-filters" className="lg:hidden border-b bg-white">
           <div className="max-w-6xl mx-auto px-4 py-3">
@@ -189,7 +193,6 @@ export default function Page() {
             ))}
         </section>
 
-        {/* Sidebar */}
         <PlanSidebar
           events={planEvents}
           open={(e) => setOpen(e)}
@@ -197,7 +200,7 @@ export default function Page() {
         />
       </main>
 
-      {/* Details dialog */}
+      {/* Details dialog — 'open' only used INSIDE this block */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -217,6 +220,15 @@ export default function Page() {
                 )}
               </div>
               <div>⏱ {fmtRange(open.date, open.start, open.durationMin)}</div>
+
+              {/* Location (hall) */}
+              {resolveTheatre(open) && (
+                <div>
+                  <span className="font-medium">Location:</span>{" "}
+                  {resolveTheatre(open)}
+                </div>
+              )}
+
               <div>
                 <span className="font-medium">Country:</span> {open.country}
                 {open.year ? ` • ${open.year}` : ""}
@@ -224,7 +236,8 @@ export default function Page() {
               </div>
               {open.director && (
                 <div>
-                  <span className="font-medium">Director:</span> {open.director}
+                  <span className="font-medium">Director:</span>{" "}
+                  {open.director}
                 </div>
               )}
               {open.description && <p className="pt-2">{open.description}</p>}
@@ -236,7 +249,11 @@ export default function Page() {
             <div className="flex gap-2">
               <a
                 className="px-3 py-2 rounded-lg bg-neutral-900 text-white text-sm"
-                href={open.ticketUrl || VENUE.ticketsHub}
+                href={
+                  open.ticketUrl ||
+                  (TICKETS as Record<string, string>)[open.id] ||
+                  VENUE.ticketsHub
+                }
                 target="_blank"
                 rel="noreferrer"
               >
@@ -261,19 +278,73 @@ export default function Page() {
       )}
 
       <footer className="max-w-6xl mx-auto px-4 py-8 text-xs text-neutral-500">
-        Built for quick deployment on Vercel. Edit data in{" "}
-        <code>data/schedule.ts</code>.
+        <div>
+          Built for quick deployment on Vercel. Edit data in{" "}
+          <code>data/schedule.ts</code>.
+        </div>
+        <div className="mt-1">Created by Derek Halsey</div>
       </footer>
     </div>
   );
 }
 
+/* ---------- helpers ---------- */
+
 function fmtRange(date: string, start: string, durMin: number) {
   const s = new Date(`${date}T${start}:00+02:00`);
   const e = new Date(s.getTime() + durMin * 60000);
-  const f = new Intl.DateTimeFormat(undefined, {
+  const f = new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
+    hourCycle: "h23",
   });
   return `${f.format(s)}–${f.format(e)}`;
 }
+
+function resolveTheatre(ev: Event) {
+  if (ev.theatre) return ev.theatre;
+
+  const byId = (THEATRES as any)?.byId as Record<string, string> | undefined;
+  if (byId?.[ev.id]) return byId[ev.id];
+
+  const byKey = (THEATRES as any)?.byKey as Record<string, string> | undefined;
+  if (!byKey) return undefined;
+
+  const exact = byKey[makeKey(ev.date, ev.title)];
+  if (exact) return exact;
+
+  const tNorm = norm(ev.title);
+  const prefix = `${ev.date}|`;
+
+  for (const [k, hall] of Object.entries(byKey)) {
+    if (!k.startsWith(prefix)) continue;
+    const keyTitle = k.slice(prefix.length);
+    if (tNorm.includes(keyTitle) || keyTitle.includes(tNorm)) return hall as string;
+
+    const shortT = tNorm.split(/[/:|–-]/)[0].trim();
+    const shortK = keyTitle.split(/[/:|–-]/)[0].trim();
+    if (
+      shortT === shortK ||
+      shortT.startsWith(shortK) ||
+      shortK.startsWith(shortT)
+    ) {
+      return hall as string;
+    }
+  }
+
+  return undefined;
+}
+
+function makeKey(date: string, title: string) {
+  return `${date}|${norm(title)}`;
+}
+
+function norm(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^\p{Letter}\p{Number}]+/gu, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+

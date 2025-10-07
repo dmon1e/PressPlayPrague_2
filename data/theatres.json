@@ -1,0 +1,79 @@
+{
+  "byId": {
+    "2025-10-07-state-of-silence": "Great Hall",
+    "2025-10-07-dynasty-orban": "Blue Hall",
+
+    "2025-10-08-limits-of-europe": "Blue Hall",
+    "2025-10-08-radio-silence": "Blue Hall",
+    "2025-10-08-bananas": "Great Hall",
+    "2025-10-08-news-without-a-newsroom": "Gallery",
+    "2025-10-08-beyond-the-headlines": "Blue Hall",
+    "2025-10-08-shorts-1": "Gallery",
+    "2025-10-08-foreign-correspondent": "Great Hall",
+
+    "2025-10-09-war-correspondent": "Blue Hall",
+    "2025-10-09-revolution-3-0": "Great Hall",
+    "2025-10-09-80-angry-journalists": "Blue Hall",
+    "2025-10-09-faces-of-torture": "Gallery",
+    "2025-10-09-news-without-a-newsroom": "Blue Hall",
+    "2025-10-09-big-boys-gone-bananas": "Great Hall",
+    "2025-10-09-el-facilitador": "Gallery",
+    "2025-10-09-absence-of-malice": "Blue Hall",
+
+    "2025-10-10-pit-stop-reporter": "Blue Hall",
+    "2025-10-10-who-killed-shireen": "Great Hall",
+    "2025-10-10-shorts-2": "Gallery",
+    "2025-10-10-yesypenko": "Great Hall",
+    "2025-10-10-calais-douvres": "Blue Hall",
+    "2025-10-10-the-dynasty-2": "Gallery",
+    "2025-10-10-good-night-good-luck": "Great Hall",
+    "2025-10-10-state-of-silence-2": "Blue Hall",
+
+    "2025-10-11-love-churchill": "Blue Hall",
+    "2025-10-11-official-secrets": "Great Hall",
+    "2025-10-11-faces-of-torture-2": "Blue Hall",
+    "2025-10-11-shorts-3": "Gallery",
+    "2025-10-11-el-facilitador": "Great Hall",
+    "2025-10-11-revolution-3-0-2": "Blue Hall",
+    "2025-10-11-closing-ceremony": "Great Hall"
+  },
+
+  "byKey": {
+    "2025-10-07|state-of-silence-estado-de-silencio": "Great Hall",
+    "2025-10-07|the-dynasty-the-rise-of-the-orban-family-s-business-empire-a-dinasztia": "Blue Hall",
+
+    "2025-10-08|limits-of-europe-hranice-evropy": "Blue Hall",
+    "2025-10-08|radio-silence-silencio-radio": "Blue Hall",
+    "2025-10-08|bananas": "Great Hall",
+    "2025-10-08|news-without-a-newsroom": "Gallery",
+    "2025-10-08|beyond-the-headlines-hinter-den-schlagzeilen": "Blue Hall",
+    "2025-10-08|shorts-day-47-of-288-shadowed-by-the-plane-tree-vector": "Gallery",
+    "2025-10-08|foreign-correspondent-1940": "Great Hall",
+
+    "2025-10-09|war-correspondent-valecny-zpravodaj": "Blue Hall",
+    "2025-10-09|revolution-3-0": "Great Hall",
+    "2025-10-09|80-angry-journalists-special-excerpt": "Blue Hall",
+    "2025-10-09|faces-of-torture": "Gallery",
+    "2025-10-09|news-without-a-newsroom": "Blue Hall",
+    "2025-10-09|big-boys-gone-bananas-with-journalists-matter": "Great Hall",
+    "2025-10-09|the-facilitator-el-facilitador": "Gallery",
+    "2025-10-09|absence-of-malice-1981": "Blue Hall",
+
+    "2025-10-10|pit-stop-reporter-reportaz-psana-na-benzince": "Blue Hall",
+    "2025-10-10|who-killed-shireen": "Great Hall",
+    "2025-10-10|shorts-day-47-plane-tree-vector": "Gallery",
+    "2025-10-10|truth-at-a-cost-vladyslav-yesypenko-s-story": "Great Hall",
+    "2025-10-10|calais-douvres-the-endless-exile": "Blue Hall",
+    "2025-10-10|the-dynasty-the-rise-of-the-orban-family-s-business-empire-a-dinasztia": "Gallery",
+    "2025-10-10|good-night-and-good-luck": "Great Hall",
+    "2025-10-10|state-of-silence-estado-de-silencio": "Blue Hall",
+
+    "2025-10-11|love-churchill": "Blue Hall",
+    "2025-10-11|official-secrets": "Great Hall",
+    "2025-10-11|faces-of-torture": "Blue Hall",
+    "2025-10-11|shorts-day-47-plane-tree-vector": "Gallery",
+    "2025-10-11|the-facilitator-el-facilitador": "Great Hall",
+    "2025-10-11|revolution-3-0": "Blue Hall",
+    "2025-10-11|closing-ceremony": "Great Hall"
+  }
+}
